@@ -25,7 +25,7 @@ crash_data %>%
 library(ggmap)
 
 # Google API key 
-register_google(key="AIzaSyDBBgIILrEjUPoFaNcYqGP5NNrmJrF2gkI")
+register_google(key="Enter you API key here")
 
 
 # Geo code Queensland's location
