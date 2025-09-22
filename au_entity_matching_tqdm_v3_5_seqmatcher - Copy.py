@@ -1,4 +1,5 @@
 
+
 import re
 import pandas as pd
 from datetime import datetime
@@ -20,15 +21,28 @@ def _norm_email(x: str) -> str:
     return f"{lp}@{dom}"
 
 def _norm_phone_au(x: str) -> str:
-    s = re.sub(r"\D+", "", (x or ""))
-    if not s:
+    """Canonicalise to E.164 (+61...). Handles mobiles 04.. and landlines with area codes."""
+    digits = re.sub(r"\D+", "", x or "")
+    if not digits:
         return ""
-    s = s.lstrip("0")
-    if s.startswith("61"):
-        core = s[2:]
-    else:
-        core = s
-    return "+61" + core if core else ""
+    digits = re.sub(r"^0*61", "61", digits)
+    if digits.startswith("61"):
+        rest = digits[2:]
+        if rest.startswith("4") and len(rest) == 9:  # mobile
+            return "+61" + rest
+        if len(rest) in (8, 9):
+            return "+61" + rest
+        return "+61" + rest
+    if digits.startswith("04") and len(digits) == 10:
+        return "+61" + digits[1:]
+    if digits.startswith(("02","03","07","08")) and len(digits) == 10:
+        return "+61" + digits[1:]
+    if 8 <= len(digits) <= 10:
+        if digits[0] == "0":
+            return "+61" + digits[1:]
+        return "+61" + digits
+    return "+" + digits
+
 
 def _norm_postcode(x: str) -> str:
     s = re.sub(r"\D+", "", (x or ""))
@@ -68,9 +82,6 @@ def _schema_apply(df: pd.DataFrame, schema: Dict[str, str]) -> pd.DataFrame:
     out["dob"]        = col_or_blank("dob")
     out["email"]      = col_or_blank("email")
     out["phone"]      = col_or_blank("phone")
-    out["address"]    = col_or_blank("address")
-    out["suburb"]     = col_or_blank("suburb")
-    out["state"]      = col_or_blank("state")
     out["postcode"]   = col_or_blank("postcode")
 
     out["email_n"]    = out["email"].map(_norm_email)
@@ -81,7 +92,7 @@ def _schema_apply(df: pd.DataFrame, schema: Dict[str, str]) -> pd.DataFrame:
 
 # -------------------- Weights & thresholds --------------------
 WEIGHTS = {
-    "same_email": 2.50,
+    "same_email": 2.00,
     "same_phone": 2.00,
     "dob_exact": 0.80,
     "dob_year_match": 0.30,
