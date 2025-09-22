@@ -1,5 +1,5 @@
 import pandas as pd
-from au_entity_matching_tqdm_v2 import match_entities
+from au_entity_matching_tqdm_v3 import match_entities
 
 df_left = pd.DataFrame([
         {"FirstName":"Liz","Surname":"Smith","DOB":"14/03/1991","Email":"liz.smith+promo@gmail.com","Phone":"0412 345 678","Address":"Unit 3/15 King St","Suburb":"Newtown","State":"NSW","Postcode":"2042"},
