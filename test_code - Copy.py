@@ -1,5 +1,5 @@
 import pandas as pd
-from au_entity_matching_tqdm_v3 import match_entities
+from au_entity_matching_tqdm_v3_1 import match_entities
 
 df_left = pd.DataFrame([
         {"FirstName":"Liz","Surname":"Smith","DOB":"14/03/1991","Email":"liz.smith+promo@gmail.com","Phone":"0412 345 678","Address":"Unit 3/15 King St","Suburb":"Newtown","State":"NSW","Postcode":"2042"},
@@ -37,7 +37,8 @@ schema_right = {
 auto_pairs, review_df = match_entities(
     df_left, df_right, schema_left, schema_right,
     auto_threshold=1.20, review_threshold=0.80,
-    review_path="to_review.csv"   # optional CSV for human QA
+    review_path="to_review.csv",   # optional CSV for human QA
+    matches_path= "matches.csv"
 )
 
 print(auto_pairs[:10])     # -> [(left_idx, right_idx), ...] using original indices

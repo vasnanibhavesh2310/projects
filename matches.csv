@@ -1,0 +1,5 @@
+left_index,right_index,reason,score
+101,555,email exact,1.0
+101,555,email exact,1.0
+102,556,phone exact,1.0
+103,557,phone exact,1.0
